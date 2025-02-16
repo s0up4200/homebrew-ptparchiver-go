@@ -16,7 +16,6 @@ class PtparchiverGo < Formula
     ldflags = %W[
       -s -w
       -X github.com/s0up4200/ptparchiver-go/pkg/version.Version=#{version}
-      -X github.com/s0up4200/ptparchiver-go/pkg/version.Date=#{Time.now.utc.iso8601}
     ].join(" ")
 
     system "go", "build", "-o", bin/"ptparchiver-go", "-ldflags=#{ldflags}", "./cmd/ptparchiver/main.go"
