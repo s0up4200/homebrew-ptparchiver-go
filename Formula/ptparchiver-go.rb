@@ -12,11 +12,13 @@ class PtparchiverGo < Formula
 
   def install
     ENV["CGO_ENABLED"] = "0"
+    build_time = Time.at(Time.now.to_i).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
     
     ldflags = %W[
       -s -w
       -X github.com/s0up4200/ptparchiver-go/pkg/version.Version=#{version}
-      -X github.com/s0up4200/ptparchiver-go/pkg/version.BuildTime=#{Time.now.utc.iso8601}
+      -X github.com/s0up4200/ptparchiver-go/pkg/version.Date=#{build_time}
+      -X github.com/s0up4200/ptparchiver-go/pkg/version.BuiltBy=Homebrew
     ].join(" ")
 
     system "go", "build", "-o", bin/"ptparchiver-go", "-ldflags=#{ldflags}", "./cmd/ptparchiver/main.go"
