@@ -11,8 +11,15 @@ class PtparchiverGo < Formula
   depends_on "go" => :build
 
   def install
-    ldflags = "-s -w -X main.version=#{version} -X main.buildTime=#{Time.now.utc.iso8601}"
-    system "go", "build", *std_go_args(ldflags: ldflags)
+    ENV["CGO_ENABLED"] = "0"
+    
+    ldflags = %W[
+      -s -w
+      -X github.com/s0up4200/ptparchiver-go/pkg/version.Version=#{version}
+      -X github.com/s0up4200/ptparchiver-go/pkg/version.Date=#{time.now.utc.iso8601}
+    ].join(" ")
+
+    system "go", "build", "-o", bin/"ptparchiver-go", "-ldflags=#{ldflags}", "./cmd/ptparchiver/main.go"
   end
 
   test do
