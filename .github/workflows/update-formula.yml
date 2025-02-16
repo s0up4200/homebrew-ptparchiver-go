@@ -1,0 +1,58 @@
+name: Update Formula
+
+on:
+  repository_dispatch:
+    types: [check-for-updates]
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Get latest release
+        id: latest_release
+        run: |
+          latest_version=$(curl -s https://api.github.com/repos/s0up4200/ptparchiver-go/releases/latest | jq -r .tag_name)
+          echo "version=${latest_version}" >> $GITHUB_OUTPUT
+          
+          download_url="https://github.com/s0up4200/ptparchiver-go/archive/refs/tags/${latest_version}.tar.gz"
+          echo "download_url=${download_url}" >> $GITHUB_OUTPUT
+          
+          sha256=$(curl -sL "${download_url}" | sha256sum | cut -d ' ' -f 1)
+          echo "sha256=${sha256}" >> $GITHUB_OUTPUT
+
+      - name: Update Formula
+        id: update
+        run: |
+          current_version=$(grep -m 1 'url.*tags/v' Formula/ptparchiver-go.rb | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+')
+          if [ "$current_version" != "${{ steps.latest_release.outputs.version }}" ]; then
+            sed -i "s|url.*|url \"${{ steps.latest_release.outputs.download_url }}\"|" Formula/ptparchiver-go.rb
+            sed -i "s|sha256.*|sha256 \"${{ steps.latest_release.outputs.sha256 }}\"|" Formula/ptparchiver-go.rb
+            echo "updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "updated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.update.outputs.updated == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(deps): update ptparchiver-go to ${{ steps.latest_release.outputs.version }}"
+          title: "chore(deps): update ptparchiver-go to ${{ steps.latest_release.outputs.version }}"
+          body: |
+            Updates ptparchiver-go to ${{ steps.latest_release.outputs.version }}
+            
+            This PR was created automatically by the update-formula workflow.
+          branch: update-ptparchiver
+          delete-branch: true
+          labels: dependencies 
