@@ -4,8 +4,8 @@
 class PtparchiverGo < Formula
   desc "Command-line tool for archiving content from PTP efficiently"
   homepage "https://github.com/s0up4200/ptparchiver-go"
-  url "https://github.com/s0up4200/ptparchiver-go/archive/refs/tags/v0.14.1.tar.gz"
-  sha256 "e635ad2b44d27c5532454ea74dead9186509f4747a721616927ef531327a09ba"
+  url "https://github.com/s0up4200/ptparchiver-go/archive/refs/tags/v0.15.0.tar.gz"
+  sha256 "0b6092f86108ef74a3c238c8628c52b26322d0e2ef53e3dc027f022fc57e7caf"
   license "MIT"
 
   depends_on "go" => :build
