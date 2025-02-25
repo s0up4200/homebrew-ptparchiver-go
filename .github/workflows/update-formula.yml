@@ -47,12 +47,12 @@ jobs:
         if: steps.update.outputs.updated == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "chore(deps): update ptparchiver-go to ${{ steps.latest_release.outputs.version }}"
-          title: "chore(deps): update ptparchiver-go to ${{ steps.latest_release.outputs.version }}"
+          commit-message: "ptparchiver-go ${{ steps.latest_release.outputs.version }}"
+          title: "ptparchiver-go ${{ steps.latest_release.outputs.version }}"
           body: |
             Updates ptparchiver-go to ${{ steps.latest_release.outputs.version }}
             
             This PR was created automatically by the update-formula workflow.
           branch: update-ptparchiver
           delete-branch: true
-          labels: dependencies 
+          labels: bump-formula-pr,go
